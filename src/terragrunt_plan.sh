@@ -7,7 +7,7 @@ function terragruntPlan {
   planExitCode=${?}
   planHasChanges=false
   planCommentStatus="Failed"
-  planResult=""
+  planResult=$(echo "${planOutput}" | grep 'Plan')
 
   # Exit code of 0 indicates success with no changes. Print the output and exit.
   if [ ${planExitCode} -eq 0 ]; then
@@ -27,14 +27,13 @@ function terragruntPlan {
     echo "plan: info: successfully planned Terragrunt configuration in ${tfWorkingDir}"
     echo "${planOutput}"
     echo
-    if echo "${planOutput}" | egrep '^-{72}$' &> /dev/null; then
-        planOutput=$(echo "${planOutput}" | sed -n -r '/-{72}/,/-{72}/{ /-{72}/d; p }')
-    fi
+
     planOutput=$(echo "${planOutput}" | sed -r -e 's/^  \+/\+/g' | sed -r -e 's/^  ~/~/g' | sed -r -e 's/^  -/-/g')
+    planOutput=$(echo "${planOutput}" | grep -v 'Refreshing state')
 
     # If output is longer than max length (65536 characters), keep last part
     planOutput=$(echo "${planOutput}" | tail -c 65000 )
-    planResult=$(echo "${planOutput}" | grep Plan)
+
   fi
 
   # Exit code of !0 indicates failure.
@@ -56,7 +55,8 @@ ${planOutput}
 </details>
 
 *Plan result: \`${planResult}\`*
-*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`, Working Directory: \`${tfWorkingDir}\`, Workspace: \`${tfWorkspace}\`*"
+
+*Workflow: \`${GITHUB_WORKFLOW}\`, Working Directory: \`${tfWorkingDir}\`*"
 
     planCommentWrapper=$(stripColors "${planCommentWrapper}")
     echo "plan: info: creating JSON"
