@@ -58,7 +58,7 @@ ${planOutput}
 
 *Workflow: \`${GITHUB_WORKFLOW}\`, Working Directory: \`${tfWorkingDir}\`*"
 
-    # planCommentWrapper=$(stripColors "${planCommentWrapper}")
+    planCommentWrapper=$(stripColors "${planCommentWrapper}")
     echo "plan: info: creating JSON"
     planPayload=$(echo "${planCommentWrapper}" | jq -R --slurp '{body: .}')
     planCommentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
