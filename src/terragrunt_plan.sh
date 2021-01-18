@@ -29,6 +29,7 @@ function terragruntPlan {
     echo
 
     planOutput=$(echo "${planOutput}" | sed -r -e 's/^  \+/\+/g' | sed -r -e 's/^  ~/~/g' | sed -r -e 's/^  -/-/g')
+    planOutput=$(echo "${planOutput}" | grep -v 'Refreshing state')
 
     # If output is longer than max length (65536 characters), keep last part
     planOutput=$(echo "${planOutput}" | tail -c 65000 )
@@ -57,7 +58,7 @@ ${planOutput}
 
 *Workflow: \`${GITHUB_WORKFLOW}\`, Working Directory: \`${tfWorkingDir}\`*"
 
-    planCommentWrapper=$(stripColors "${planCommentWrapper}")
+    # planCommentWrapper=$(stripColors "${planCommentWrapper}")
     echo "plan: info: creating JSON"
     planPayload=$(echo "${planCommentWrapper}" | jq -R --slurp '{body: .}')
     planCommentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
