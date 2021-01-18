@@ -34,6 +34,10 @@ function terragruntPlan {
 
     # If output is longer than max length (65536 characters), keep last part
     planOutput=$(echo "${planOutput}" | tail -c 65000 )
+
+    echo "DEBUG >>>>>>>"
+    echo "${planOutput}"
+    echo "DEBUG <<<<<<<"
   fi
 
   # Exit code of !0 indicates failure.
@@ -56,7 +60,7 @@ ${planOutput}
 
 *Plan result: \`${planResult}\`*
 
-*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`, Working Directory: \`${tfWorkingDir}\`, Workspace: \`${tfWorkspace}\`*"
+*Workflow: \`${GITHUB_WORKFLOW}\`, Working Directory: \`${tfWorkingDir}\`*"
 
     planCommentWrapper=$(stripColors "${planCommentWrapper}")
     echo "plan: info: creating JSON"
