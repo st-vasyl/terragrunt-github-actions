@@ -15,6 +15,22 @@ function hasPrefix {
   esac
 }
 
+function notifySlack {
+  curl -H "Content-Type:application/json" -X POST --data "{
+    \"attachments\": [
+        {
+          \"title\": \"${SLACK_TITLE}\",
+          \"title_link\": \"${SLACK_TITLE_LINK}\",
+          \"color\": \"#${SLACK_COLOR}\",
+          \"text\": \"${SLACK_TEXT}\",
+        },
+    ],
+    \"channel\": \"${SLACK_CHANNEL}\",
+    \"username\": \"${SLACK_USERNAME}\",
+    \"icon_url\": \"${SLACK_ICON}\"
+  }" ${SLACK_URL}
+}
+
 function parseInputs {
   # Required inputs
   if [ "${INPUT_TF_ACTIONS_VERSION}" != "" ]; then
@@ -154,6 +170,7 @@ function main {
   source ${scriptDir}/terragrunt_init.sh
   source ${scriptDir}/terragrunt_validate.sh
   source ${scriptDir}/terragrunt_plan.sh
+  source ${scriptDir}/terragrunt_plancheck.sh
   source ${scriptDir}/terragrunt_apply.sh
   source ${scriptDir}/terragrunt_output.sh
   source ${scriptDir}/terragrunt_import.sh
@@ -181,6 +198,10 @@ function main {
     plan)
       installTerragrunt
       terragruntPlan ${*}
+      ;;
+    plancheck)
+      installTerragrunt
+      terragruntPlanCheck ${*}
       ;;
     apply)
       installTerragrunt
